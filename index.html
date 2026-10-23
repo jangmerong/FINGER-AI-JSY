@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nexus 본부 인력 가동률</title>
-  <meta name="description" content="Nexus 본부 월간 인력 가동률 대시보드 (2026-10-23 기준)" />
+  <meta name="description" content="Nexus 본부 월간 인력 가동률 대시보드 (공수 MM 기준, 2026-10-23)" />
 
   <!-- Pretendard 폰트 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
@@ -73,8 +73,8 @@
       <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-lg" aria-hidden="true">💡</div>
       <div class="min-w-0 flex-1 text-sm leading-relaxed text-amber-900">
         <span class="mr-1.5 inline-flex items-center rounded-md bg-amber-500 px-1.5 py-0.5 text-[11px] font-bold tracking-wide text-white align-middle">AI 분석</span>
-        <span class="font-semibold">FinanceOps 1팀의 대기 인원이 가장 많습니다(5명).</span>
-        <span class="text-amber-800">신규 프로젝트 투입 또는 인력 재배치가 권장됩니다.</span>
+        <span class="font-semibold" id="insight-main"></span>
+        <span class="text-amber-800" id="insight-sub"></span>
       </div>
     </section>
 
@@ -83,22 +83,22 @@
       <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <p class="text-xs font-medium text-slate-500">부서명</p>
         <p class="mt-2 text-xl font-bold text-slate-900 sm:text-2xl" id="kpi-dept"></p>
-        <p class="mt-1 text-xs text-slate-400">8개 팀</p>
+        <p class="mt-1 text-xs text-slate-400">8개 팀 · 재직 <span class="num" id="kpi-hc"></span>명</p>
       </div>
       <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-        <p class="text-xs font-medium text-slate-500">총 인원</p>
-        <p class="num mt-2 text-xl font-bold text-slate-900 sm:text-2xl"><span id="kpi-total"></span><span class="ml-0.5 text-sm font-medium text-slate-400">명</span></p>
-        <p class="mt-1 text-xs text-slate-400">퇴사·전배 인원 제외 재직자</p>
+        <p class="text-xs font-medium text-slate-500">투입 가능 공수 (10월)</p>
+        <p class="num mt-2 text-xl font-bold text-slate-900 sm:text-2xl"><span id="kpi-avail"></span><span class="ml-1 text-sm font-medium text-slate-400">MM</span></p>
+        <p class="mt-1 text-xs text-slate-400">퇴사·전배·입사 전 공수 제외</p>
       </div>
       <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-        <p class="text-xs font-medium text-slate-500">현재 투입 인원</p>
-        <p class="num mt-2 text-xl font-bold text-brand-600 sm:text-2xl"><span id="kpi-active"></span><span class="ml-0.5 text-sm font-medium text-slate-400">명</span></p>
-        <p class="mt-1 text-xs text-slate-400">기준일에 프로젝트 투입 중</p>
+        <p class="text-xs font-medium text-slate-500">투입 공수 (10월)</p>
+        <p class="num mt-2 text-xl font-bold text-brand-600 sm:text-2xl"><span id="kpi-used"></span><span class="ml-1 text-sm font-medium text-slate-400">MM</span></p>
+        <p class="mt-1 text-xs text-slate-400">프로젝트에 투입된 공수 합계</p>
       </div>
       <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-        <p class="text-xs font-medium text-slate-500">미계약 대기 인원</p>
-        <p class="num mt-2 text-xl font-bold text-slate-900 sm:text-2xl"><span id="kpi-pending"></span><span class="ml-0.5 text-sm font-medium text-slate-400">명</span></p>
-        <p class="mt-1 text-xs text-slate-400">철수 완료 후 다음 계약 대기</p>
+        <p class="text-xs font-medium text-slate-500">미투입 공수 (10월)</p>
+        <p class="num mt-2 text-xl font-bold text-slate-900 sm:text-2xl"><span id="kpi-idle"></span><span class="ml-1 text-sm font-medium text-slate-400">MM</span></p>
+        <p class="mt-1 text-xs text-slate-400">투입 가능 공수 − 투입 공수</p>
       </div>
     </section>
 
@@ -106,7 +106,7 @@
     <section class="grid gap-3 sm:grid-cols-2 sm:gap-4">
       <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
         <div class="flex items-baseline justify-between">
-          <p class="text-sm font-medium text-slate-600">현재 가동률</p>
+          <p class="text-sm font-medium text-slate-600">현재 가동률 <span class="text-slate-400">(10월)</span></p>
           <p class="num text-xs text-slate-400" id="rate-current-formula"></p>
         </div>
         <p class="num mt-2 text-3xl font-bold text-slate-900" id="rate-current"></p>
@@ -116,10 +116,10 @@
       </div>
       <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
         <div class="flex items-baseline justify-between">
-          <p class="text-sm font-medium text-slate-600">예상 가동률</p>
+          <p class="text-sm font-medium text-slate-600">예상 가동률 <span class="text-slate-400">(11월)</span></p>
           <p class="num text-xs text-slate-400" id="rate-expected-formula"></p>
         </div>
-        <p class="num mt-2 text-3xl font-bold text-slate-900"><span id="rate-expected"></span> <span class="ml-1 align-middle text-sm font-semibold text-emerald-600" id="rate-delta"></span></p>
+        <p class="num mt-2 text-3xl font-bold text-slate-900"><span id="rate-expected"></span> <span class="ml-1 align-middle text-sm font-semibold" id="rate-delta"></span></p>
         <div class="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-100">
           <div class="h-full rounded-full bg-brand-300" id="bar-expected"></div>
         </div>
@@ -130,45 +130,45 @@
     <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 class="text-base font-semibold text-slate-900">현재 vs 예상 가동률</h2>
-          <p class="mt-1 text-sm text-slate-500">본부 전체와 팀별 비교 · 예상 가동률은 미계약 대기 인원이 모두 투입된다고 가정</p>
+          <h2 class="text-base font-semibold text-slate-900">현재(10월) vs 예상(11월) 가동률</h2>
+          <p class="mt-1 text-sm text-slate-500">공수(MM) 기준 · 11월은 현재 계약·계획된 투입 일정 기준 전망</p>
         </div>
         <div class="flex items-center gap-4 text-xs text-slate-600">
-          <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-sm bg-brand-600"></span>현재 가동률</span>
-          <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-sm bg-brand-300"></span>예상 가동률</span>
+          <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-sm bg-brand-600"></span>현재 (10월)</span>
+          <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-sm bg-brand-300"></span>예상 (11월)</span>
         </div>
       </div>
       <div class="relative mt-6 h-[360px] w-full">
-        <canvas id="utilChart" aria-label="팀별 현재 가동률과 예상 가동률 막대 그래프" role="img"></canvas>
+        <canvas id="utilChart" aria-label="팀별 10월 가동률과 11월 예상 가동률 막대 그래프" role="img"></canvas>
       </div>
     </section>
 
     <!-- 월별 추이 + 팀 표 -->
     <section class="grid gap-4 lg:grid-cols-5">
       <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:col-span-2">
-        <h2 class="text-base font-semibold text-slate-900">월별 투입율 (2026)</h2>
-        <p class="mt-1 text-sm text-slate-500">공수(M/M) 기준 · 11~12월은 현재 계약 기준 전망</p>
+        <h2 class="text-base font-semibold text-slate-900">월별 가동률 (2026)</h2>
+        <p class="mt-1 text-sm text-slate-500">본부 전체 · 공수(MM) 기준 · 11~12월은 전망</p>
         <div class="relative mt-5 h-[260px] w-full">
-          <canvas id="monthlyChart" aria-label="2026년 월별 투입율 막대 그래프" role="img"></canvas>
+          <canvas id="monthlyChart" aria-label="2026년 월별 가동률 막대 그래프" role="img"></canvas>
         </div>
-        <p class="num mt-3 text-xs text-slate-500">연간 평균 투입율 <span class="font-semibold text-slate-700">77.1%</span></p>
+        <p class="num mt-3 text-xs text-slate-500">연간 평균 가동률 <span class="font-semibold text-slate-700">77.1%</span></p>
       </div>
 
       <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm lg:col-span-3">
         <div class="px-5 pt-5 sm:px-6 sm:pt-6">
-          <h2 class="text-base font-semibold text-slate-900">팀별 인력 현황</h2>
-          <p class="mt-1 text-sm text-slate-500">본부장·부본부장 2명(투입 중)은 본부 전체에만 포함</p>
+          <h2 class="text-base font-semibold text-slate-900">팀별 공수 현황</h2>
+          <p class="mt-1 text-sm text-slate-500">단위 MM · 본부장·부본부장 공수(2MM)는 본부 전체에만 포함</p>
         </div>
         <div class="mt-4 overflow-x-auto">
-          <table class="num w-full min-w-[520px] text-sm">
+          <table class="num w-full min-w-[560px] text-sm">
             <thead class="bg-slate-50 text-xs text-slate-500">
               <tr>
                 <th class="px-5 py-2.5 text-left font-medium sm:px-6">조직</th>
-                <th class="px-3 py-2.5 text-right font-medium">총원</th>
-                <th class="px-3 py-2.5 text-right font-medium">투입</th>
-                <th class="px-3 py-2.5 text-right font-medium">대기</th>
-                <th class="px-3 py-2.5 text-right font-medium">현재 가동률</th>
-                <th class="px-5 py-2.5 text-right font-medium sm:px-6">예상 가동률</th>
+                <th class="px-3 py-2.5 text-right font-medium">재직</th>
+                <th class="px-3 py-2.5 text-right font-medium">가능 MM</th>
+                <th class="px-3 py-2.5 text-right font-medium">투입 MM</th>
+                <th class="px-3 py-2.5 text-right font-medium">10월 가동률</th>
+                <th class="px-5 py-2.5 text-right font-medium sm:px-6">11월 예상</th>
               </tr>
             </thead>
             <tbody id="teamTable" class="divide-y divide-slate-100"></tbody>
@@ -181,12 +181,11 @@
     <section class="rounded-xl border border-slate-200 bg-white p-5 text-sm text-slate-600 shadow-sm sm:p-6">
       <h2 class="text-base font-semibold text-slate-900">산출 기준</h2>
       <ul class="mt-3 list-disc space-y-1.5 pl-5">
-        <li><b class="font-semibold text-slate-700">현재 가동률</b> = 현재 투입 인원 ÷ 총 인원 × 100</li>
-        <li><b class="font-semibold text-slate-700">예상 가동률</b> = (현재 투입 인원 + 미계약 대기 인원) ÷ 총 인원 × 100</li>
-        <li>총 인원: 2026년 인력 현황표 등재 81명 중 기준일까지 퇴사·타 본부 전배한 10명을 뺀 재직자 (관리·인턴 별도 시트 제외)</li>
-        <li>현재 투입: 기준일이 계약된 프로젝트의 투입일~철수(예정)일 사이에 있는 인원 (본부장·영업·사업관리 등 지원 투입 포함)</li>
-        <li>미계약 대기: 철수(예정)일이 기준일 이전으로 지나 다음 계약을 기다리는 인원 14명 + 계약 전 '계획' 단계로 투입된 인원 1명</li>
-        <li>월별 투입율: 원본 시트의 월별 투입 공수 ÷ 투입 가능 공수</li>
+        <li><b class="font-semibold text-slate-700">가동률</b> = 해당 월 투입 공수(MM) ÷ 해당 월 투입 가능 공수(MM) × 100</li>
+        <li><b class="font-semibold text-slate-700">현재 가동률</b>: 10월 실적·확정 일정 기준 / <b class="font-semibold text-slate-700">예상 가동률</b>: 11월 계약·계획된 일정 기준 전망</li>
+        <li>투입 공수: 인력 현황표의 인원별 월 투입 공수 합계 (예: 10월 16일 철수 시 0.51MM)</li>
+        <li>투입 가능 공수: 현황표 등재 인원(81명) − 해당 월 퇴직·휴직·입사 전 공수 (원본 시트 산식과 동일)</li>
+        <li>재직: 기준일(10/23) 현재 재직 인원</li>
       </ul>
     </section>
   </main>
@@ -196,61 +195,71 @@
   </footer>
 
   <script>
-    // ===== 엑셀에서 추출한 데이터 (기준일 2026-10-23) =====
+    // ===== 엑셀에서 추출한 데이터 (공수 MM 기준) =====
     const DEPT = {
       name: 'Nexus 본부',
-      total: 71,     // 총 인원 (재직자)
-      active: 56,    // 현재 투입 인원
-      pending: 15    // 미계약 대기 인원
+      headcount: 71,                      // 기준일 재직 인원
+      oct: { used: 59.47, avail: 72.61 }, // 10월 투입 공수 / 투입 가능 공수
+      nov: { used: 38.07, avail: 70.00 }  // 11월 (전망)
     };
 
-    // 팀별 인원 (본부장·부본부장 2명은 본부 전체에만 포함)
+    // 팀별 공수 (본부장·부본부장은 본부 전체에만 포함)
     const TEAMS = [
-      { name: 'FinanceOps 1팀', total: 7,  active: 2,  pending: 5 },
-      { name: 'FinanceOps 2팀', total: 10, active: 8,  pending: 2 },
-      { name: 'FinanceOps 3팀', total: 8,  active: 7,  pending: 1 },
-      { name: 'FinanceOps 4팀', total: 9,  active: 7,  pending: 2 },
-      { name: 'FinanceOps 5팀', total: 13, active: 9,  pending: 4 },
-      { name: 'FinanceOps 6팀', total: 13, active: 12, pending: 1 },
-      { name: 'GovOps팀',       total: 6,  active: 6,  pending: 0 },
-      { name: 'GrowthOps팀',    total: 3,  active: 3,  pending: 0 }
+      { name: 'FinanceOps 1팀', hc: 7,  oct: { used: 4.90,  avail: 8.00 },  nov: { used: 2.00, avail: 7.00 } },
+      { name: 'FinanceOps 2팀', hc: 10, oct: { used: 7.58,  avail: 10.00 }, nov: { used: 9.00, avail: 10.00 } },
+      { name: 'FinanceOps 3팀', hc: 8,  oct: { used: 6.75,  avail: 8.00 },  nov: { used: 3.13, avail: 8.00 } },
+      { name: 'FinanceOps 4팀', hc: 9,  oct: { used: 8.73,  avail: 9.61 },  nov: { used: 5.15, avail: 9.00 } },
+      { name: 'FinanceOps 5팀', hc: 13, oct: { used: 10.78, avail: 13.00 }, nov: { used: 6.19, avail: 13.00 } },
+      { name: 'FinanceOps 6팀', hc: 13, oct: { used: 11.73, avail: 13.00 }, nov: { used: 7.60, avail: 13.00 } },
+      { name: 'GovOps팀',       hc: 6,  oct: { used: 6.00,  avail: 6.00 },  nov: { used: 2.00, avail: 5.00 } },
+      { name: 'GrowthOps팀',    hc: 3,  oct: { used: 3.00,  avail: 3.00 },  nov: { used: 3.00, avail: 3.00 } }
     ];
 
-    // 월별 투입율 (공수 기준, 원본 시트 값)
+    // 월별 가동률 (공수 기준, 원본 시트 값)
     const MONTHLY = [70.0, 76.1, 73.3, 77.8, 84.5, 93.2, 93.4, 97.3, 87.7, 81.9, 54.4, 33.4];
     const CURRENT_MONTH = 10;
 
     // ===== 계산 =====
-    const pct = (n, d) => (d ? (n / d) * 100 : 0);
-    const fmt = (v) => v.toFixed(1) + '%';
-    const currentRate  = pct(DEPT.active, DEPT.total);
-    const expectedRate = pct(DEPT.active + DEPT.pending, DEPT.total);
+    const rate = (m) => (m.avail ? (m.used / m.avail) * 100 : 0);
+    const fmt  = (v) => v.toFixed(1) + '%';
+    const mm   = (v) => v.toFixed(2);
+    const currentRate  = rate(DEPT.oct);
+    const expectedRate = rate(DEPT.nov);
+    const delta = expectedRate - currentRate;
 
     // ===== KPI 렌더링 =====
-    document.getElementById('kpi-dept').textContent = DEPT.name;
-    document.getElementById('kpi-total').textContent = DEPT.total;
-    document.getElementById('kpi-active').textContent = DEPT.active;
-    document.getElementById('kpi-pending').textContent = DEPT.pending;
-    document.getElementById('rate-current').textContent = fmt(currentRate);
-    document.getElementById('rate-expected').textContent = fmt(expectedRate);
-    document.getElementById('rate-delta').textContent = '+' + (expectedRate - currentRate).toFixed(1) + '%p';
-    document.getElementById('rate-current-formula').textContent = `${DEPT.active} ÷ ${DEPT.total}`;
-    document.getElementById('rate-expected-formula').textContent = `(${DEPT.active} + ${DEPT.pending}) ÷ ${DEPT.total}`;
-    document.getElementById('bar-current').style.width = currentRate + '%';
-    document.getElementById('bar-expected').style.width = expectedRate + '%';
+    const $ = (id) => document.getElementById(id);
+    $('kpi-dept').textContent  = DEPT.name;
+    $('kpi-hc').textContent    = DEPT.headcount;
+    $('kpi-avail').textContent = mm(DEPT.oct.avail);
+    $('kpi-used').textContent  = mm(DEPT.oct.used);
+    $('kpi-idle').textContent  = mm(DEPT.oct.avail - DEPT.oct.used);
+    $('rate-current').textContent  = fmt(currentRate);
+    $('rate-expected').textContent = fmt(expectedRate);
+    $('rate-delta').textContent = (delta >= 0 ? '+' : '') + delta.toFixed(1) + '%p';
+    $('rate-delta').classList.add(delta >= 0 ? 'text-emerald-600' : 'text-rose-600');
+    $('rate-current-formula').textContent  = `${mm(DEPT.oct.used)} ÷ ${mm(DEPT.oct.avail)} MM`;
+    $('rate-expected-formula').textContent = `${mm(DEPT.nov.used)} ÷ ${mm(DEPT.nov.avail)} MM`;
+    $('bar-current').style.width  = currentRate + '%';
+    $('bar-expected').style.width = expectedRate + '%';
+
+    // ===== AI 인사이트 (데이터 기반 자동 문구) =====
+    const lowest = [...TEAMS].sort((a, b) => rate(a.oct) - rate(b.oct))[0];
+    $('insight-main').textContent = `${lowest.name}의 10월 가동률이 가장 낮습니다(${fmt(rate(lowest.oct))}).`;
+    $('insight-sub').textContent  = `11월 본부 전체 가동률이 ${fmt(expectedRate)}로 떨어질 전망이어서, 신규 프로젝트 투입 또는 인력 재배치가 권장됩니다.`;
 
     // ===== 팀 표 =====
-    const rows = [{ name: DEPT.name + ' 전체', total: DEPT.total, active: DEPT.active, pending: DEPT.pending, isTotal: true }, ...TEAMS];
-    document.getElementById('teamTable').innerHTML = rows.map(t => {
-      const r = pct(t.active, t.total);
-      const tone = r >= 85 ? 'text-emerald-600' : r >= 60 ? 'text-slate-700' : 'text-rose-600';
+    const rows = [{ name: DEPT.name + ' 전체', hc: DEPT.headcount, oct: DEPT.oct, nov: DEPT.nov, isTotal: true }, ...TEAMS];
+    $('teamTable').innerHTML = rows.map(t => {
+      const r = rate(t.oct);
+      const tone = r >= 85 ? 'text-emerald-600' : r >= 70 ? 'text-slate-700' : 'text-rose-600';
       return `<tr class="${t.isTotal ? 'bg-brand-50/60 font-semibold text-slate-900' : 'text-slate-700'}">
         <td class="px-5 py-2.5 sm:px-6">${t.name}</td>
-        <td class="px-3 py-2.5 text-right">${t.total}</td>
-        <td class="px-3 py-2.5 text-right">${t.active}</td>
-        <td class="px-3 py-2.5 text-right">${t.pending}</td>
+        <td class="px-3 py-2.5 text-right">${t.hc}</td>
+        <td class="px-3 py-2.5 text-right">${mm(t.oct.avail)}</td>
+        <td class="px-3 py-2.5 text-right">${mm(t.oct.used)}</td>
         <td class="px-3 py-2.5 text-right font-semibold ${tone}">${fmt(r)}</td>
-        <td class="px-5 py-2.5 text-right text-slate-500 sm:px-6">${fmt(pct(t.active + t.pending, t.total))}</td>
+        <td class="px-5 py-2.5 text-right text-slate-500 sm:px-6">${fmt(rate(t.nov))}</td>
       </tr>`;
     }).join('');
 
@@ -279,20 +288,20 @@
       }
     };
 
-    // ===== 메인 차트: 현재 vs 예상 가동률 =====
+    // ===== 메인 차트: 현재(10월) vs 예상(11월) =====
     const labels  = [DEPT.name + ' 전체', ...TEAMS.map(t => t.name)];
-    const curData = [currentRate,  ...TEAMS.map(t => pct(t.active, t.total))];
-    const expData = [expectedRate, ...TEAMS.map(t => pct(t.active + t.pending, t.total))];
+    const curData = [currentRate,  ...TEAMS.map(t => rate(t.oct))];
+    const expData = [expectedRate, ...TEAMS.map(t => rate(t.nov))];
     const isMobile = window.matchMedia('(max-width: 640px)').matches;
 
-    const utilChart = new Chart(document.getElementById('utilChart'), {
+    const utilChart = new Chart($('utilChart'), {
       type: 'bar',
       data: {
         labels,
         datasets: [
-          { label: '현재 가동률', data: curData, backgroundColor: C_CURRENT, borderRadius: 4,
+          { label: '현재 (10월)', data: curData, backgroundColor: C_CURRENT, borderRadius: 4,
             categoryPercentage: 0.7, barPercentage: 0.9 },
-          { label: '예상 가동률', data: expData, backgroundColor: C_EXPECTED, borderRadius: 4,
+          { label: '예상 (11월)', data: expData, backgroundColor: C_EXPECTED, borderRadius: 4,
             categoryPercentage: 0.7, barPercentage: 0.9 }
         ]
       },
@@ -321,13 +330,13 @@
       plugins: [valueLabels]
     });
 
-    // ===== 월별 투입율 차트 =====
-    const monthlyChart = new Chart(document.getElementById('monthlyChart'), {
+    // ===== 월별 가동률 차트 =====
+    const monthlyChart = new Chart($('monthlyChart'), {
       type: 'bar',
       data: {
         labels: MONTHLY.map((_, i) => (i + 1) + '월'),
         datasets: [{
-          label: '투입율',
+          label: '가동률',
           data: MONTHLY,
           backgroundColor: MONTHLY.map((_, i) =>
             i + 1 === CURRENT_MONTH ? C_CURRENT : i + 1 > CURRENT_MONTH ? '#e0e7ff' : '#c7d2fe'),
@@ -348,7 +357,7 @@
           legend: { display: false },
           tooltip: {
             backgroundColor: '#0f172a', padding: 10, cornerRadius: 8,
-            callbacks: { label: c => ` 투입율: ${c.parsed.y.toFixed(1)}%` + (c.dataIndex + 1 > CURRENT_MONTH ? ' (전망)' : '') }
+            callbacks: { label: c => ` 가동률: ${c.parsed.y.toFixed(1)}%` + (c.dataIndex + 1 > CURRENT_MONTH ? ' (전망)' : '') }
           }
         }
       }
@@ -360,7 +369,7 @@
     window.addEventListener('beforeprint', resizeCharts);
     window.addEventListener('afterprint',  resizeCharts);
     window.matchMedia('print').addEventListener('change', resizeCharts);
-    document.getElementById('btn-pdf').addEventListener('click', () => window.print());
+    $('btn-pdf').addEventListener('click', () => window.print());
   </script>
 </body>
 </html>
